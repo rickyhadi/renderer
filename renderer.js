@@ -8,9 +8,15 @@ function sprintf(src, data) {
 	return src;
 }; 
 
-function renderer(getCoreConfig, staticConfig, classGetter){
+function renderer(){
+	var getCoreConfig, staticConfig, classGetter;
 	
     var obj={};
+	obj.init = function(_getCoreConfig, _staticConfig, _classGetter) {
+		getCoreConfig = _getCoreConfig;
+		staticConfig = _staticConfig;
+		classGetter = _classGetter;
+	};
     obj.renderPage = async function renderPage(section, req, data) {
         
         var result = '';
@@ -32,7 +38,7 @@ function renderer(getCoreConfig, staticConfig, classGetter){
             console.log('renderer.renderPage ' + section + ' ' + ex);
         }
         return result;
-    }
+    };
     obj.renderContent = async function renderContent(sectionConfig, coreConfig) {
         var result = '';
         try{
@@ -107,7 +113,7 @@ function renderer(getCoreConfig, staticConfig, classGetter){
             console.log('renderer.renderContent ' + ex);
         }
         return result;
-    }
+    };
     obj.renderReplace = async function renderReplace(result, replaceConfig, coreConfig) {
         try{
             if(Array.isArray(replaceConfig)){
@@ -128,7 +134,7 @@ function renderer(getCoreConfig, staticConfig, classGetter){
             console.log('renderer.renderReplace ' + ex);
         }
         return result;
-    }
+    };
     return obj;
 }
 
