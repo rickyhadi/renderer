@@ -9,24 +9,21 @@ function sprintf(src, data) {
 }; 
 
 function renderer(getCoreConfig, staticConfig, classGetter){
-	var obj = {};
-	obj.getCoreConfig = getCoreConfig;
-	obj.staticConfig = staticConfig;
-	obj.classGetter = classGetter;
 	
+    var obj={};
     obj.renderPage = async function renderPage(section, req, data) {
         
         var result = '';
         try{
-            if(obj.staticConfig[section]){
-                var coreConfig = await obj.getCoreConfig(section, req);
+            if(staticConfig[section]){
+                var coreConfig = await getCoreConfig(section, req);
                 if(data){
                     coreConfig = Object.assign({}, coreConfig, data);
                 }
-                result += await obj.renderContent(obj.staticConfig[section].Childs, coreConfig);
-                if (obj.staticConfig[section].ReplaceResult)
+                result += await obj.renderContent(staticConfig[section].Childs, coreConfig);
+                if (staticConfig[section].ReplaceResult)
                 {
-                    result = await obj.renderReplace(result, obj.staticConfig[section].ReplaceResult, coreConfig);
+                    result = await obj.renderReplace(result, staticConfig[section].ReplaceResult, coreConfig);
                 }
             }
         }
@@ -50,7 +47,7 @@ function renderer(getCoreConfig, staticConfig, classGetter){
                 if(sectionConfig.Condition){
                     try{
                         var conditionobj = sectionConfig.Condition;
-                        canRender = obj.classGetter(conditionobj.ClassName, conditionobj.ParamArgs, null);
+                        canRender = classGetter(conditionobj.ClassName, conditionobj.ParamArgs, null);
                     }
                     catch(ex)
                     {
@@ -83,7 +80,7 @@ function renderer(getCoreConfig, staticConfig, classGetter){
                             break;
                         case 'TEMPLATE':
                             var config_key = sectionConfig.Key;
-                            result += await obj.renderContent(obj.staticConfig.TEMPLATE[config_key], coreConfig);
+                            result += await obj.renderContent(staticConfig.TEMPLATE[config_key], coreConfig);
                             break;
                         case 'FILE':
                             var config_file = sectionConfig.File;
@@ -100,7 +97,7 @@ function renderer(getCoreConfig, staticConfig, classGetter){
                         case 'CODEBEHIND':
                             var config_class = sectionConfig.Class;
                             var templatefile =  sprintf(config_class.TemplateFile, coreConfig);
-                            result += await obj.classGetter(config_class.ClassName, config_class.ParamArgs, templatefile);
+                            result += await classGetter(config_class.ClassName, config_class.ParamArgs, templatefile);
                             break;
                     }
                 }
