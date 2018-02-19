@@ -1,6 +1,5 @@
 var readFile = require('readfile');
 var Handlebars = require('handlebars');
-var readFile = require('readFile');
 
 function sprintf(src, data) {
 	Object.keys(data).forEach(function(key){
