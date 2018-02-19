@@ -137,7 +137,7 @@ function renderer(getCoreConfig, staticConfig, dictClassGetter){
                 var replace_result = await obj.renderContent(replaceConfig.Replace, coreConfig);
                 var data = {};
                 data[placeholder] = replace_result;
-                result = helper.sprintf(result, data);
+                result = sprintf(result, data);
             }
         }
         catch(ex){
