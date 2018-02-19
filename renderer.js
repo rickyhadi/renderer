@@ -1,4 +1,6 @@
 var readFile = require('readfile');
+var Handlebars = require('handlebars');
+var readFile = require('readFile');
 
 function sprintf(src, data) {
 	Object.keys(data).forEach(function(key){
@@ -8,7 +10,22 @@ function sprintf(src, data) {
 	return src;
 }; 
 
-function renderer(getCoreConfig, staticConfig, classGetter){
+async function classGetter(classname, args, templatefile, dict){
+    var result = '';
+    var data = dict[classname](args);
+    if(templatefile){
+        var source = await readFile(templatefile);
+        var template = Handlebars.compile(source);
+        result = template(data);
+    }
+    else{
+        result = data;
+    }
+    
+    return result;
+};
+
+function renderer(getCoreConfig, staticConfig, dictClassGetter){
 	
     var obj={};
     obj.renderPage = async function renderPage(section, req, data) {
@@ -47,7 +64,7 @@ function renderer(getCoreConfig, staticConfig, classGetter){
                 if(sectionConfig.Condition){
                     try{
                         var conditionobj = sectionConfig.Condition;
-                        canRender = classGetter(conditionobj.ClassName, conditionobj.ParamArgs, null);
+                        canRender = classGetter(conditionobj.ClassName, conditionobj.ParamArgs, null, dictClassGetter);
                     }
                     catch(ex)
                     {
@@ -97,7 +114,7 @@ function renderer(getCoreConfig, staticConfig, classGetter){
                         case 'CODEBEHIND':
                             var config_class = sectionConfig.Class;
                             var templatefile =  sprintf(config_class.TemplateFile, coreConfig);
-                            result += await classGetter(config_class.ClassName, config_class.ParamArgs, templatefile);
+                            result += await classGetter(config_class.ClassName, config_class.ParamArgs, templatefile, dictClassGetter);
                             break;
                     }
                 }
