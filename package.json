@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "coreconfig": "git+https://github.com/rickyhadi/coreconfig.git",
     "handlebars": "^4.0.11",
     "injectiondictionary": "git+https://github.com/rickyhadi/injectiondictionary.git",
     "readfile": "git+https://github.com/rickyhadi/readfile.git",
