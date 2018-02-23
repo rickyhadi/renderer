@@ -1,5 +1,8 @@
 var readFile = require('readfile');
 var Handlebars = require('handlebars');
+var coreConfigModule = require('coreconfig')();
+var staticConfig = require('staticconfig');
+var injectionDictionary = require('injectiondictionary');
 
 function sprintf(src, data) {
 	Object.keys(data).forEach(function(key){
@@ -9,9 +12,9 @@ function sprintf(src, data) {
 	return src;
 }; 
 
-async function classGetter(classname, args, templatefile, dict){
+async function classGetter(classname, args, templatefile){
     var result = '';
-    var data = dict[classname](args);
+    var data = injectionDictionary[classname](args);
     if(templatefile){
         var source = await readFile(templatefile);
         var template = Handlebars.compile(source);
@@ -24,7 +27,7 @@ async function classGetter(classname, args, templatefile, dict){
     return result;
 };
 
-function renderer(getCoreConfig, staticConfig, dictClassGetter){
+function renderer(){
 	
     var obj={};
     obj.renderPage = async function renderPage(section, req, data) {
@@ -32,7 +35,7 @@ function renderer(getCoreConfig, staticConfig, dictClassGetter){
         var result = '';
         try{
             if(staticConfig[section]){
-                var coreConfig = await getCoreConfig(section, req);
+                var coreConfig = await coreConfigModule.getCoreConfig(section, req);
                 if(data){
                     coreConfig = Object.assign({}, coreConfig, data);
                 }
@@ -63,7 +66,7 @@ function renderer(getCoreConfig, staticConfig, dictClassGetter){
                 if(sectionConfig.Condition){
                     try{
                         var conditionobj = sectionConfig.Condition;
-                        canRender = classGetter(conditionobj.ClassName, conditionobj.ParamArgs, null, dictClassGetter);
+                        canRender = classGetter(conditionobj.ClassName, conditionobj.ParamArgs, null);
                     }
                     catch(ex)
                     {
@@ -113,7 +116,7 @@ function renderer(getCoreConfig, staticConfig, dictClassGetter){
                         case 'CODEBEHIND':
                             var config_class = sectionConfig.Class;
                             var templatefile =  sprintf(config_class.TemplateFile, coreConfig);
-                            result += await classGetter(config_class.ClassName, config_class.ParamArgs, templatefile, dictClassGetter);
+                            result += await classGetter(config_class.ClassName, config_class.ParamArgs, templatefile);
                             break;
                     }
                 }

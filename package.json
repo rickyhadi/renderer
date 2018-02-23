@@ -10,6 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "handlebars": "^4.0.11",
-    "readfile": "git+https://github.com/rickyhadi/readfile.git"
+    "injectiondictionary": "git+https://github.com/rickyhadi/injectiondictionary.git",
+    "readfile": "git+https://github.com/rickyhadi/readfile.git",
+    "staticconfig": "git+https://github.com/rickyhadi/staticconfig.git"
   }
 }
